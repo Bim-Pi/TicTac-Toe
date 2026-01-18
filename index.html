@@ -3,10 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Tic Tac Toe - Pure HTML/JS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            transition: all 0.5s ease;
+        }
+
+        .dark-theme .container {
+            background-color: rgba(30, 30, 46, 0.95);
+            color: #f0f0f0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #2575fc;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .dark-theme header h1 {
+            color: #6a11cb;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .dark-theme .subtitle {
+            color: #aaa;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .player-turn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .player-turn {
+            background: linear-gradient(to right, #434343 0%, #000000 100%);
+        }
+
+        .player-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        #current-player-icon.x {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        #current-player-icon.o {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        }
+
+        #current-player-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 15px;
+        }
+
+        .score {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            min-width: 100px;
+        }
+
+        .dark-theme .score {
+            background: #2d2d44;
+        }
+
+        .score-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .dark-theme .score-label {
+            color: #aaa;
+        }
+
+        .score-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        #score-x .score-value {
+            color: #ff416c;
+        }
+
+        #score-o .score-value {
+            color: #2193b0;
+        }
+
+        #score-draw .score-value {
+            color: #666;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .game-container {
+            background: rgba(40, 40, 60, 0.7);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+            aspect-ratio: 1/1;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cell {
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            aspect-ratio: 1/1;
+        }
+
+        .dark-theme .cell {
+            background: #2d2d44;
+        }
+
+        .cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .cell.x {
+            color: #ff416c;
+        }
+
+        .cell.o {
+            color: #2193b0;
+        }
+
+        .cell.winning {
+            background: linear-gradient(135deg, #f9f586 0%, #ffd571 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        .dark-theme .cell.winning {
+            background: linear-gradient(135deg, #3a3a5d 0%, #4a4a7a 100%);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        #reset-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.3);
+        }
+
+        #reset-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(37, 117, 252, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: 2px solid #2575fc;
+        }
+
+        .dark-theme .btn.secondary {
+            background: rgba(45, 45, 68, 0.9);
+            color: #f0f0f0;
+        }
+
+        .btn.secondary:hover {
+            background: #2575fc;
+            color: white;
+        }
+
+        .game-status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark-theme .game-status {
+            background: rgba(45, 45, 68, 0.9);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .instructions {
+            background: rgba(45, 45, 68, 0.9);
+        }
+
+        .instructions h3 {
+            color: #2575fc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-theme .instructions h3 {
+            color: #6a11cb;
+        }
+
+        .instructions p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .dark-theme .instructions p {
+            color: #ccc;
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .dark-theme footer {
+            color: #aaa;
+        }
+
+        footer i {
+            color: #ff416c;
+            margin: 0 5px;
+        }
+
+        /* Modal for game result */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            animation: modalAppear 0.5s ease;
+        }
+
+        .dark-theme .modal-content {
+            background: #2d2d44;
+            color: #f0f0f0;
+        }
+
+        @keyframes modalAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #2575fc;
+        }
+
+        .dark-theme .modal-title {
+            color: #6a11cb;
+        }
+
+        .modal-message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .dark-theme .modal-message {
+            color: #ccc;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .player-turn {
+                justify-content: center;
+            }
+            
+            .score-board {
+                justify-content: center;
+            }
+            
+            .game-board {
+                max-width: 100%;
+            }
+            
+            .cell {
+                font-size: 3rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-icon {
+                font-size: 3.5rem;
+            }
+            
+            .modal-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -17,7 +479,7 @@
         
         <div class="game-info">
             <div class="player-turn" id="player-turn">
-                <span class="player-icon" id="current-player-icon">X</span>
+                <span class="player-icon x" id="current-player-icon">X</span>
                 <span id="current-player-text">Player X's Turn</span>
             </div>
             <div class="score-board">
@@ -61,10 +523,280 @@
         </div>
         
         <footer>
-            <p>Created with <i class="fas fa-heart"></i> using Python & Flask</p>
+            <p>Created with <i class="fas fa-heart"></i> using HTML, CSS & JavaScript</p>
         </footer>
     </div>
     
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Game Result Modal -->
+    <div class="modal" id="game-result-modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modal-icon"></div>
+            <h2 class="modal-title" id="modal-title"></h2>
+            <p class="modal-message" id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="play-again-btn" class="btn">
+                    <i class="fas fa-play"></i> Play Again
+                </button>
+                <button id="close-modal-btn" class="btn secondary">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let scores = {
+            'X': 0,
+            'O': 0,
+            'draw': 0
+        };
+        
+        // Winning combinations
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+        
+        // DOM Elements
+        const gameBoardElement = document.getElementById('game-board');
+        const currentPlayerIcon = document.getElementById('current-player-icon');
+        const currentPlayerText = document.getElementById('current-player-text');
+        const gameStatus = document.getElementById('game-status');
+        const resetBtn = document.getElementById('reset-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const scoreXElement = document.querySelector('#score-x .score-value');
+        const scoreOElement = document.querySelector('#score-o .score-value');
+        scoreDrawElement = document.querySelector('#score-draw .score-value');
+        
+        // Modal elements
+        const gameResultModal = document.getElementById('game-result-modal');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        // Initialize the game
+        function initGame() {
+            createBoard();
+            updateGameStatus();
+            updateScores();
+            attachEventListeners();
+        }
+        
+        // Create the game board
+        function createBoard() {
+            gameBoardElement.innerHTML = '';
+            
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', () => handleCellClick(i));
+                gameBoardElement.appendChild(cell);
+            }
+        }
+        
+        // Handle cell click
+        function handleCellClick(index) {
+            // Check if cell is empty and game is active
+            if (gameBoard[index] !== '' || !gameActive) {
+                return;
+            }
+            
+            // Update game board
+            gameBoard[index] = currentPlayer;
+            
+            // Update UI
+            const cellElement = gameBoardElement.children[index];
+            cellElement.textContent = currentPlayer;
+            cellElement.classList.add(currentPlayer.toLowerCase());
+            
+            // Check for win or draw
+            if (checkWin()) {
+                handleWin();
+            } else if (checkDraw()) {
+                handleDraw();
+            } else {
+                // Switch player
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                updateGameStatus();
+            }
+        }
+        
+        // Check for win
+        function checkWin() {
+            for (const combination of winningCombinations) {
+                const [a, b, c] = combination;
+                
+                if (
+                    gameBoard[a] !== '' &&
+                    gameBoard[a] === gameBoard[b] &&
+                    gameBoard[a] === gameBoard[c]
+                ) {
+                    // Highlight winning cells
+                    highlightWinningCells(combination);
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Highlight winning cells
+        function highlightWinningCells(combination) {
+            for (const index of combination) {
+                const cellElement = gameBoardElement.children[index];
+                cellElement.classList.add('winning');
+            }
+        }
+        
+        // Check for draw
+        function checkDraw() {
+            return !gameBoard.includes('');
+        }
+        
+        // Handle win
+        function handleWin() {
+            gameActive = false;
+            scores[currentPlayer]++;
+            updateScores();
+            
+            // Show win modal
+            showGameResultModal(
+                'trophy',
+                `Player ${currentPlayer} Wins!`,
+                `Player ${currentPlayer} has won the game!`,
+                `#${currentPlayer === 'X' ? 'ff416c' : '2193b0'}`
+            );
+            
+            // Update game status
+            gameStatus.textContent = `Player ${currentPlayer} Wins! 🎉`;
+            gameStatus.style.color = currentPlayer === 'X' ? '#ff416c' : '#2193b0';
+        }
+        
+        // Handle draw
+        function handleDraw() {
+            gameActive = false;
+            scores['draw']++;
+            updateScores();
+            
+            // Show draw modal
+            showGameResultModal(
+                'handshake',
+                "It's a Draw!",
+                "The game ended in a draw. No winner this time!",
+                '#666'
+            );
+            
+            // Update game status
+            gameStatus.textContent = "It's a Draw!";
+            gameStatus.style.color = '#666';
+        }
+        
+        // Show game result modal
+        function showGameResultModal(icon, title, message, color) {
+            // Set icon based on result
+            let iconClass;
+            switch(icon) {
+                case 'trophy':
+                    iconClass = 'fas fa-trophy';
+                    break;
+                case 'handshake':
+                    iconClass = 'fas fa-handshake';
+                    break;
+                default:
+                    iconClass = 'fas fa-info-circle';
+            }
+            
+            modalIcon.className = `modal-icon ${iconClass}`;
+            modalIcon.style.color = color;
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            gameResultModal.style.display = 'flex';
+        }
+        
+        // Reset the game
+        function resetGame() {
+            // Clear game board
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            
+            // Clear UI
+            const cells = gameBoardElement.children;
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].textContent = '';
+                cells[i].className = 'cell';
+            }
+            
+            // Update game status
+            updateGameStatus();
+            
+            // Hide modal if open
+            gameResultModal.style.display = 'none';
+        }
+        
+        // Update game status display
+        function updateGameStatus() {
+            // Update player turn display
+            currentPlayerIcon.textContent = currentPlayer;
+            currentPlayerIcon.className = `player-icon ${currentPlayer.toLowerCase()}`;
+            currentPlayerText.textContent = `Player ${currentPlayer}'s Turn`;
+            
+            // Update game status text
+            if (gameActive) {
+                const movesCount = gameBoard.filter(cell => cell !== '').length;
+                gameStatus.textContent = `Game in progress... Move: ${movesCount + 1}`;
+                gameStatus.style.color = '#2575fc';
+            }
+        }
+        
+        // Update scores display
+        function updateScores() {
+            scoreXElement.textContent = scores['X'];
+            scoreOElement.textContent = scores['O'];
+            scoreDrawElement.textContent = scores['draw'];
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                icon.className = 'fas fa-moon';
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        }
+        
+        // Attach event listeners
+        function attachEventListeners() {
+            resetBtn.addEventListener('click', resetGame);
+            themeToggle.addEventListener('click', toggleTheme);
+            playAgainBtn.addEventListener('click', resetGame);
+            closeModalBtn.addEventListener('click', () => {
+                gameResultModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === gameResultModal) {
+                    gameResultModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>
